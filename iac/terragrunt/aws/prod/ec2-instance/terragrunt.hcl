@@ -51,8 +51,8 @@ inputs = {
   # Tags
   tags                        = local.tags
   github_username             = "toufikj"
-  github_token                = "${get_env("GH_TOKEN", "")}" # Pull from environment or CI/CD secrets
-  docker_hub_token            = "${get_env("DOCKERHUB_TOKEN", "")}" 
+  github_token                = "${secrets.GH_TOKEN}" # Pull from environment or CI/CD secrets
+  docker_hub_token            = "${secrets.DOCKERHUB_TOKEN}" # Pull from environment or CI/CD secrets
 }
 
 terraform {
