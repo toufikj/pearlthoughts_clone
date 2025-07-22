@@ -56,3 +56,8 @@ variable "github_token" {
   type        = string
   sensitive   = true
 }
+variable "docker_hub_token" {
+  description = "Docker Hub token for pulling images"
+  type        = string
+  sensitive   = true
+}
