@@ -15,7 +15,7 @@ services:
       - strapi-net
 
   strapi:
-    image: strapi/strapi:latest
+    image: toufikj/strapi:latest
     container_name: strapi-app
     environment:
       NODE_ENV: development

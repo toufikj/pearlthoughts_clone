@@ -8,8 +8,9 @@ apt-get install unzip docker.io docker-compose -y
 # sudo ./aws/install
 
 # Clone the private repository using GitHub username and token
-git clone "https://${github_username}:${github_token}@github.com/PearlThoughts-DevOps-Internship/Strapi-Config-Crew.git" -b toufik-jamadar
-cd Strapi-Config-Crew/my-strapi-app/
+# git clone "https://${github_username}:${github_token}@github.com/toufikj/pearlthoughts.git" -b toufik-jamadar
+# cd Strapi-Config-Crew/my-strapi-app/
+cd my-strapi-app/
 ls
 echo ${github_token} || echo "GitHub token is not set"
 # Copy environment variables
@@ -27,7 +28,7 @@ echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USER" --password-s
 # Pull and run the image from Docker Hub
 docker pull "$DOCKERHUB_REPO:latest"
 ls
-docker-compose up -d --build
+docker-compose up -d 
 docker ps -a
 docker images
 
