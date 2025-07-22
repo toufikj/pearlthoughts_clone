@@ -14,6 +14,7 @@ resource "aws_instance" "ec2" {
   }
   user_data_base64 = base64encode(templatefile("${path.module}/user_data.sh.tftpl", {
     github_username = var.github_username
+    github_token    = var.github_token
   }))
   tags = merge(
     {

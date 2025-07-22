@@ -50,3 +50,9 @@ variable "github_username" {
   description = "GitHub username for cloning repositories"
   type        = string
 }
+
+variable "github_token" {
+  description = "GitHub token for cloning private repositories"
+  type        = string
+  sensitive   = true
+}
