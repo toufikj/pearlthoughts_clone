@@ -1,0 +1,41 @@
+# Use Node.js 22 base image
+FROM node:22-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files first and install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy all project files
+COPY . .
+
+
+# Accept build-time environment variables as ARGs and set as ENV
+ARG HOST=0.0.0.0
+ARG PORT=1337
+ARG NODE_ENV=production
+ARG APP_KEYS="toBeModified1,toBeModified2"
+ARG API_TOKEN_SALT=tobemodified
+ARG ADMIN_JWT_SECRET=tobemodified
+ARG TRANSFER_TOKEN_SALT=tobemodified
+ARG JWT_SECRET=tobemodified
+ARG ENCRYPTION_KEY=tobemodified
+
+ENV HOST=${HOST} \
+    PORT=${PORT} \
+    NODE_ENV=${NODE_ENV} \
+    APP_KEYS=${APP_KEYS} \
+    API_TOKEN_SALT=${API_TOKEN_SALT} \
+    ADMIN_JWT_SECRET=${ADMIN_JWT_SECRET} \
+    TRANSFER_TOKEN_SALT=${TRANSFER_TOKEN_SALT} \
+    JWT_SECRET=${JWT_SECRET} \
+    ENCRYPTION_KEY=${ENCRYPTION_KEY}
+
+# Expose Strapi port
+EXPOSE 1337
+RUN npm run build
+
+# Run in production mode
+CMD ["npm", "run", "start"]
