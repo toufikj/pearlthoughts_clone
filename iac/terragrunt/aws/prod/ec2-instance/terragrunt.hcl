@@ -51,8 +51,8 @@ inputs = {
   # Tags
   tags                        = local.tags
   github_username             = "toufikj"
-  github_token                = getenv("GH_TOKEN")
-  docker_hub_token            = getenv("DOCKERHUB_TOKEN")
+  github_token     = get_env("GH_TOKEN")
+  docker_hub_token = get_env("DOCKERHUB_TOKEN")
 }
 
 terraform {
