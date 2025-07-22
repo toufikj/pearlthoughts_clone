@@ -3,31 +3,29 @@
 # Update and install Docker and Docker Compose
 apt-get update
 apt-get install unzip docker.io docker-compose -y
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
+# curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+# unzip awscliv2.zip
+# sudo ./aws/install
 
 # Clone the private repository using GitHub username and token
-git clone https://${github_username}:${github_token}@github.com/PearlThoughts-DevOps-Internship/Strapi-Config-Crew.git -b toufik-jamadar
+git clone https://${github_username}:${GITHUB_TOKEN}@github.com/PearlThoughts-DevOps-Internship/Strapi-Config-Crew.git -b toufik-jamadar
 cd Strapi-Config-Crew/my-strapi-app/
-
+ls
 # Copy environment variables
 cp .env.example .env
 
-# Start Strapi using Docker Compose
-
-docker-compose up -d --build
-docker images
-# Build, tag, and push the Docker image to Docker Hub
+# Docker Hub credentials (token from environment)
 DOCKERHUB_USER="toufikj"
-DOCKERHUB_PASS="Docker-Hub-Password"
+DOCKERHUB_TOKEN="${DOCKERHUB_TOKEN}"
 DOCKERHUB_REPO="toufikj/strapi"
 
 # Authenticate Docker to Docker Hub
+echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USER" --password-stdin
 
-echo "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
+# Pull and run the image from Docker Hub
+docker pull "$DOCKERHUB_REPO:latest"
 
-docker tag my-strapi-app_strapi:latest "$DOCKERHUB_REPO:latest"
-docker push "$DOCKERHUB_REPO:latest"
+docker-compose up -d --build
+docker images
 
 echo "[+] User_data script completed successfully"

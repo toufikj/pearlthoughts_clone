@@ -45,4 +45,6 @@ jobs:
           context: ${{ inputs.dockerfile-path }}
           file: ${{ inputs.dockerfile-path }}/Dockerfile
           push: true
-          tags: ${{ inputs.dockerhub-username }}/${{ inputs.dockerhub-repository }}:${{ github.run_number }}
+          tags: |
+            ${{ inputs.dockerhub-username }}/${{ inputs.dockerhub-repository }}:${{ github.run_number }}
+            ${{ inputs.dockerhub-username }}/${{ inputs.dockerhub-repository }}:latest
