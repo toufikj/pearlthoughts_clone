@@ -29,8 +29,6 @@ on:
 env:
   TERRAFORM_VERSION: 1.8.5
   TERRAGRUNT_VERSION: v0.59.4
-  GH_TOKEN: ${{ secrets.GH_TOKEN }}
-  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
 jobs:
   terragrunt-apply:
