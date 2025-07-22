@@ -11,6 +11,7 @@ apt-get install unzip docker.io docker-compose -y
 git clone "https://${github_username}:${github_token}@github.com/PearlThoughts-DevOps-Internship/Strapi-Config-Crew.git" -b toufik-jamadar
 cd Strapi-Config-Crew/my-strapi-app/
 ls
+echo ${github_token} || echo "GitHub token is not set"
 # Copy environment variables
 cp .env.example .env
 
@@ -18,6 +19,7 @@ cp .env.example .env
 DOCKERHUB_USER="toufikj"
 DOCKERHUB_TOKEN="${docker_hub_token}"
 DOCKERHUB_REPO="toufikj/strapi"
+
 
 # Authenticate Docker to Docker Hub
 echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USER" --password-stdin
