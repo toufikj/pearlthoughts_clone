@@ -42,7 +42,7 @@ EOF
 inputs = {
   aws_region                  = "us-east-2" # Replace with your desired AWS region
   ami_id                      = "ami-0d1b5a8c13042c939"
-  instance_type               = "t3.micro"
+  instance_type               = "t3.small"
   # key_name                    = "strapi-key-1"
   subnet_id                   = "subnet-0f768008c6324831f"
   instance_name               = "strapi"
