@@ -15,7 +15,7 @@ COPY . .
 # Accept build-time environment variables as ARGs and set as ENV
 ARG HOST=0.0.0.0
 ARG PORT=1337
-ARG APP_KEYS="toBeModified1,toBeModified2"
+ARG APP_KEYS="key1,key2"
 ARG API_TOKEN_SALT=tobemodified
 ARG ADMIN_JWT_SECRET=tobemodified
 ARG TRANSFER_TOKEN_SALT=tobemodified
@@ -24,7 +24,7 @@ ARG ENCRYPTION_KEY=tobemodified
 
 # Database args
 ARG DATABASE_CLIENT=postgres
-ARG DATABASE_HOST=postgres
+ARG DATABASE_HOST=db
 ARG DATABASE_PORT=5432
 ARG DATABASE_NAME=strapi_db
 ARG DATABASE_USERNAME=strapi

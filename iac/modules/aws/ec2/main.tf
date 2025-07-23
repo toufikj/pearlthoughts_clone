@@ -4,7 +4,7 @@ resource "aws_instance" "ec2" {
   region                     = var.aws_region
   ami                        = var.ami_id
   instance_type              = var.instance_type
-  # key_name                   = module.key_pair.key_pair_name
+  key_name                   = var.key_name
   subnet_id                  = var.subnet_id
   vpc_security_group_ids     = [aws_security_group.all_tcp.id]
   associate_public_ip_address = true

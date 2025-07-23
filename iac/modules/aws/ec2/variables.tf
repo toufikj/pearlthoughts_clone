@@ -15,10 +15,10 @@ variable "instance_type" {
   default     = "t3.micro"
 }
 
-# variable "key_name" {
-#   description = "SSH key name for the EC2 instance"
-#   type        = string
-# }
+variable "key_name" {
+  description = "SSH key name for the EC2 instance"
+  type        = string
+}
 
 variable "subnet_id" {
   description = "Subnet ID where the EC2 instance will be launched"
