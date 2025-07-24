@@ -1,5 +1,5 @@
 locals {
-  region = "ap-south-1"
+  region = "us-east-2"
 
   version_terraform    = ">=1.8.0"
   version_terragrunt   = ">=0.59.1"

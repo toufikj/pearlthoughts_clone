@@ -18,6 +18,9 @@ on:
         description: "Select the resources name"
         options:
           - ec2-instance
+          - alb
+          - rds
+          - ecs
       tf_function:
         type: choice
         description: "infrastructure planning / deployment"
@@ -31,6 +34,7 @@ env:
   TERRAGRUNT_VERSION: v0.59.4
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+  DB_PASS: ${{ secrets.DB_PASS }}
 
 jobs:
   terragrunt-apply:
