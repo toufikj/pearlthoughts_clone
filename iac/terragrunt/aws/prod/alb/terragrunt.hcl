@@ -43,7 +43,7 @@ inputs = {
   env                  = "prod"
   product              = "strapi"
   
-  subnets              = ["subnet-0f768008c6324831f", "subnet-0c0bb5df2571165a9", "subnet-0906c244cfe901a9a", "subnet-0cc2ddb32492bcc41", "subnet-0cc813dd4d76bf797"]
+  subnets              = ["subnet-0f768008c6324831f", "subnet-0c0bb5df2571165a9","subnet-0cc2ddb32492bcc41"]
   alb_sg               = ["sg-0a3182349c9ca5ee9"]
   
   # ssl_certificate_arn = ""

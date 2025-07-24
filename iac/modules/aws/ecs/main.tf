@@ -72,20 +72,6 @@ resource "aws_lb_target_group" "ecs" {
 }
 
 
-# Create Listener on Port 443 (HTTPS)
-#resource "aws_lb_listener" "https_listener" {
-#  load_balancer_arn = var.existing_load_balancer_arn  # Use the existing Load Balancer ARN
-#  port              = 443
-#  protocol          = "HTTPS"
-#  ssl_policy        = "ELBSecurityPolicy-2016-08"     # Define SSL policy
-#  certificate_arn   = var.ssl_certificate_arn         # SSL Certificate ARN
-
-#  default_action {
-#    type             = "forward"
-#    target_group_arn = aws_lb_target_group.flowise.arn
-#  }
-#}
-
 resource "aws_lb_listener" "http_listener" {
   load_balancer_arn = var.existing_load_balancer_arn
   port              = 80
