@@ -61,3 +61,29 @@ jobs:
           tags: |
             ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:${{ github.run_number }}
             ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:latest
+
+      - name: Get the Current ECS Task Definition
+        id: get-task-def
+        env:
+          ECS_TASK_DEFINITION: "prod-strapi-task"
+          ECS_CLUSTER_NAME: "toufikj-strapi"
+          ECS_SERVICE_NAME: "prod-strapi-service"
+          CONTAINER_NAME: "strapi-app"  
+        run: |
+          aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
+
+      - name: Render New ECS Task Definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:latest
+
+      - name: Deploy Amazon ECS Task Definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE_NAME }}
+          cluster: ${{ env.ECS_CLUSTER_NAME }}
+          wait-for-service-stability: true
