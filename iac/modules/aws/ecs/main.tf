@@ -72,15 +72,40 @@ resource "aws_lb_target_group" "ecs" {
 }
 
 
-resource "aws_lb_listener" "http_listener" {
-  load_balancer_arn = var.existing_load_balancer_arn
-  port              = 80
-  protocol          = "HTTP"
+# Create Listener on Port 443 (HTTPS)
+#resource "aws_lb_listener" "https_listener" {
+#  load_balancer_arn = var.existing_load_balancer_arn  # Use the existing Load Balancer ARN
+#  port              = 443
+#  protocol          = "HTTPS"
+#  ssl_policy        = "ELBSecurityPolicy-2016-08"     # Define SSL policy
+#  certificate_arn   = var.ssl_certificate_arn         # SSL Certificate ARN
 
-  default_action {
+#  default_action {
+#    type             = "forward"
+#    target_group_arn = aws_lb_target_group.flowise.arn
+#  }
+#}
+
+# Create Listener Rule for Existing Listener (Attach to Strapi Target Group)
+resource "aws_lb_listener_rule" "ecs" {
+  listener_arn = var.existing_listener_arn # Use the ARN of the existing listener on port 443
+  priority     = var.listener_priority     # Set a priority, e.g., 30
+
+  action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.ecs.arn
   }
+  condition {
+    path_pattern {
+      values = ["/"]
+    }
+  }
+# Add Host-Header Condition for domain
+  # condition {
+  #   host_header {
+  #     values = [var.domain]  # Add your custom domain here
+  #   }
+  # }
 }
 
 # Create ECS Service for Strapi

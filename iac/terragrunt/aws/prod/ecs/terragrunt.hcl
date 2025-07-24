@@ -72,7 +72,7 @@ inputs = {
   existing_listener_arn = "arn:aws:elasticloadbalancing:us-east-2:607700977843:listener/app/prod-strapi-alb/b7aa6f1ec9fd9d79/5c0855aed75e7475"
   existing_ecs_task_execution_role_arn = "arn:aws:iam::607700977843:role/ecs-task-execution-role"
   # ssl_certificate_arn = ""
-  # listener_priority     = 5  # Listener priority
+  listener_priority     = 5  # Listener priority
 
   counts = 1  # Number of ECR repositories to create increse the count as needed
   names = ["toufikj-strapi"]  # Names of the ECR repositories ["metabase", "stage-strapi"]
