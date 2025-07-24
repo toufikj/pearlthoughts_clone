@@ -67,10 +67,10 @@ inputs = {
   }
   desired_count         = 1
   existing_load_balancer_arn = "arn:aws:elasticloadbalancing:us-east-2:607700977843:loadbalancer/app/prod-strapi-alb/2033af0435ee9c66"
-  private_subnets       = ["subnet-0f768008c6324831f", "subnet-0c0bb5df2571165a9","subnet-0cc2ddb32492bcc41"]
+  private_subnets       = ["subnet-0f768008c6324831f", "subnet-0f6f7de9bc0d5407e","subnet-024126fd1eb33ec08", "subnet-0c0bb5df2571165a9", "subnet-0906c244cfe901a9a", "subnet-0cc2ddb32492bcc41", "subnet-0cc813dd4d76bf797"]
   security_group        = "sg-0a3182349c9ca5ee9"
   existing_listener_arn = "arn:aws:elasticloadbalancing:us-east-2:607700977843:listener/app/prod-strapi-alb/2033af0435ee9c66/d82096b450d60a64"
-  existing_ecs_task_execution_role_arn = "arn:aws:iam::607700977843:role/ecsTaskExecutionRole"
+  existing_ecs_task_execution_role_arn = "arn:aws:iam::607700977843:role/ecs-task-execution-role"
   # ssl_certificate_arn = ""
   listener_priority     = 5  # Listener priority
 
