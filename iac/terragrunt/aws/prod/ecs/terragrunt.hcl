@@ -55,7 +55,7 @@ inputs = {
   target_group_protocol = "HTTP"
   health_check_protocol = "HTTP"
   health_check_interval = 10
-  health_check_timeout  = 5
+  health_check_timeout  = 8
   healthy_threshold     = 2
   unhealthy_threshold   = 3
   # domain                = "strapi.toufik.online"
@@ -72,7 +72,7 @@ inputs = {
   existing_listener_arn = "arn:aws:elasticloadbalancing:us-east-2:607700977843:listener/app/prod-strapi-alb/2033af0435ee9c66/d82096b450d60a64"
   existing_ecs_task_execution_role_arn = "arn:aws:iam::607700977843:role/ecs-task-execution-role"
   # ssl_certificate_arn = ""
-  listener_priority     = 5  # Listener priority
+  # listener_priority     = 5  # Listener priority
 
   counts = 1  # Number of ECR repositories to create increse the count as needed
   names = ["toufikj-strapi"]  # Names of the ECR repositories ["metabase", "stage-strapi"]

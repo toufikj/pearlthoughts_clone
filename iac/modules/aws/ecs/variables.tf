@@ -139,10 +139,10 @@ variable "security_group" {
 }
 
 # Listener priority
-variable "listener_priority" {
-  description = "The priority for the load balancer listener rule."
-  type        = number
-}
+# variable "listener_priority" {
+#   description = "The priority for the load balancer listener rule."
+#   type        = number
+# }
 
 variable "existing_listener_arn" {
   description = "The listener rule."

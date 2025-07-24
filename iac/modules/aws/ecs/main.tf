@@ -61,7 +61,7 @@ resource "aws_lb_target_group" "ecs" {
   vpc_id      = var.vpc_id
 
   health_check {
-    path                = "/"
+    path                = "/admin"
     protocol            = var.health_check_protocol
     interval            = var.health_check_interval
     timeout             = var.health_check_timeout
@@ -86,26 +86,15 @@ resource "aws_lb_target_group" "ecs" {
 #  }
 #}
 
-# Create Listener Rule for Existing Listener (Attach to Strapi Target Group)
-resource "aws_lb_listener_rule" "ecs" {
-  listener_arn = var.existing_listener_arn # Use the ARN of the existing listener on port 443
-  priority     = var.listener_priority     # Set a priority, e.g., 30
+resource "aws_lb_listener" "http_listener" {
+  load_balancer_arn = var.existing_load_balancer_arn
+  port              = 80
+  protocol          = "HTTP"
 
-  action {
+  default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.ecs.arn
   }
-  condition {
-    path_pattern {
-      values = ["/"]
-    }
-  }
-# Add Host-Header Condition for domain
-  # condition {
-  #   host_header {
-  #     values = [var.domain]  # Add your custom domain here
-  #   }
-  # }
 }
 
 # Create ECS Service for Strapi
