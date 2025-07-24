@@ -55,6 +55,9 @@ jobs:
           context: ${{ inputs.dockerfile-path }}
           file: ${{ inputs.dockerfile-path }}/Dockerfile
           push: true
+          build-args: |
+            DATABASE_HOST=${{ secrets.DB_HOST }}
+            DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }}
           tags: |
             ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:${{ github.run_number }}
             ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:latest
