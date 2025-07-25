@@ -24,6 +24,12 @@ on:
         type: string
         default: ./my-strapi-app/
 
+env:
+  ECS_TASK_DEFINITION: "prod-strapi-task"
+  ECS_CLUSTER_NAME: "toufikj-strapi"
+  ECS_SERVICE_NAME: "prod-strapi-service"
+  CONTAINER_NAME: "strapi-app"      
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -63,12 +69,7 @@ jobs:
             ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:latest
 
       - name: Get the Current ECS Task Definition
-        id: get-task-def
-        env:
-          ECS_TASK_DEFINITION: "prod-strapi-task"
-          ECS_CLUSTER_NAME: "toufikj-strapi"
-          ECS_SERVICE_NAME: "prod-strapi-service"
-          CONTAINER_NAME: "strapi"  
+        id: get-task-def 
         run: |
           aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
 
