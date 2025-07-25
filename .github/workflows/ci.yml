@@ -28,7 +28,7 @@ env:
   ECS_TASK_DEFINITION: "prod-strapi-task"
   ECS_CLUSTER_NAME: "toufikj-strapi"
   ECS_SERVICE_NAME: "prod-strapi-service"
-  CONTAINER_NAME: "strapi-app"      
+  CONTAINER_NAME: "strapi"      
 
 jobs:
   build:
@@ -79,7 +79,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:latest
+          image: ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:${{ github.run_number }}
 
       - name: Deploy Amazon ECS Task Definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
