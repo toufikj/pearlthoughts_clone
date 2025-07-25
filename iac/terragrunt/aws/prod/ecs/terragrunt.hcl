@@ -73,9 +73,6 @@ inputs = {
   existing_ecs_task_execution_role_arn = "arn:aws:iam::607700977843:role/ecs-task-execution-role"
   # ssl_certificate_arn = ""
   listener_priority     = 5  # Listener priority
-
-  counts = 1  # Number of ECR repositories to create increse the count as needed
-  names = ["toufikj-strapi"]  # Names of the ECR repositories ["metabase", "stage-strapi"]
 } 
 
 terraform {

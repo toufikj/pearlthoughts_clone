@@ -1,11 +1,19 @@
----
+## ✨ Features
+- Strapi headless CMS with TypeScript support
+- Docker Compose for local development and production
+- Infrastructure as Code with Terragrunt and Terraform (modular AWS setup)
+- Automated CI/CD with GitHub Actions (ci.yml for build/test, terraform.yml for infrastructure)
+- Secure secrets management via GitHub Actions secrets
+- Modular AWS resources: EC2, ECR, RDS, ALB, ECS, Security Groups, Key Pairs
+- One-click deployment and update via GitHub Actions
+- Example workflows for both application and infrastructure deployment
 
 ## 🚀 Infrastructure Provisioning & Deployment Sequence (with GitHub Actions)
 
 To provision AWS resources and deploy Strapi using GitHub Actions, follow this recommended sequence:
 
 ### 1. Create RDS (Database)
-**Workflow:** `.github/workflows/cd.yml` (or your RDS provisioning workflow)
+**Workflow:** `.github/workflows/terraform.yml` (or your RDS provisioning workflow)
 **Inputs to provide:**
   - `db_name`, `username`, `password`, `subnet_ids`, `vpc_id`, `security_group` (SG for DB access)
   - Any other required database parameters
@@ -13,7 +21,7 @@ To provision AWS resources and deploy Strapi using GitHub Actions, follow this r
   - Outputs: RDS endpoint, DB SG ID (save these for later)
 
 ### 2. Create ALB (Application Load Balancer)
-**Workflow:** `.github/workflows/cd.yml` (or your ALB provisioning workflow)
+**Workflow:** `.github/workflows/terraform.yml` (or your ALB provisioning workflow)
 **Inputs to provide:**
   - `alb_sg` (security group for ALB, can reference DB SG if needed)
   - `subnets` (public subnets for ALB)
@@ -21,7 +29,7 @@ To provision AWS resources and deploy Strapi using GitHub Actions, follow this r
   - Outputs: ALB ARN, Listener ARN, ALB SG ID (save these for ECS)
 
 ### 3. Create ECS (Strapi Service)
-**Workflow:** `.github/workflows/cd.yml` (or your ECS provisioning workflow)
+**Workflow:** `.github/workflows/terraform.yml` (or your ECS provisioning workflow)
 **Inputs to provide:**
   - `cluster_id` (ECS cluster ARN)
   - `container_image_uri` (ECR image URI from build/push workflow)
@@ -65,6 +73,7 @@ To provision AWS resources and deploy Strapi using GitHub Actions, follow this r
 **Tip:** Always update the inputs in your Terragrunt/Terraform or workflow files with the outputs from the previous step (e.g., use the DB SG ID in ALB, ALB ARN in ECS, etc.).
 
 For more details, see the comments and examples in each workflow file in `.github/workflows/`.
+
 # 🚀 Strapi Setup Guide
 
 Follow these steps to set up Strapi with Node.js v22 and start your project, or to deploy using this repository:
@@ -191,7 +200,7 @@ To deploy Strapi using Docker Compose and GitHub Actions, follow these steps:
      - Use `.github/workflows/ci.yml`.
      - This runs automatically on push or pull request.
    - For CD (deploy):
-     - Use `.github/workflows/cd.yml`.
+     - Use `.github/workflows/terraform.yml`.
      - You can trigger this manually from the Actions tab.
      - Inputs (if any) can be set in the workflow dispatch or as environment variables in the workflow file.
 
