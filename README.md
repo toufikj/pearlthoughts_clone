@@ -12,30 +12,41 @@
 
 To provision AWS resources and deploy Strapi using GitHub Actions, follow this recommended sequence:
 
+### 0. Create ECR Repository
+**Manual Step:**
+- Go to AWS ECR and create a repository named `toufikj-strapi` in your target region (e.g., us-east-2).
+- This will be used to store your Strapi Docker images.
+
 ### 1. Create RDS (Database)
-**Workflow:** `.github/workflows/terraform.yml` (or your RDS provisioning workflow)
+**Workflow:** `.github/workflows/terraform.yml`
 **Inputs to provide:**
+  - `resource`: `rds`
+  - `operation`: `apply`
   - `db_name`, `username`, `password`, `subnet_ids`, `vpc_id`, `security_group` (SG for DB access)
   - Any other required database parameters
 **Result:**
   - Outputs: RDS endpoint, DB SG ID (save these for later)
 
 ### 2. Create ALB (Application Load Balancer)
-**Workflow:** `.github/workflows/terraform.yml` (or your ALB provisioning workflow)
+**Workflow:** `.github/workflows/terraform.yml`
 **Inputs to provide:**
-  - `alb_sg` (security group for ALB, can reference DB SG if needed)
+  - `resource`: `alb`
+  - `operation`: `apply`
+  - `alb_sg`: Use the security group ID created by the RDS module (from previous step)
   - `subnets` (public subnets for ALB)
 **Result:**
   - Outputs: ALB ARN, Listener ARN, ALB SG ID (save these for ECS)
 
 ### 3. Create ECS (Strapi Service)
-**Workflow:** `.github/workflows/terraform.yml` (or your ECS provisioning workflow)
+**Workflow:** `.github/workflows/terraform.yml`
 **Inputs to provide:**
+  - `resource`: `ecs`
+  - `operation`: `apply`
   - `cluster_id` (ECS cluster ARN)
   - `container_image_uri` (ECR image URI from build/push workflow)
-  - `security_group` (SG for ECS tasks, can reference ALB SG)
-  - `existing_load_balancer_arn` (ALB ARN from previous step)
-  - `existing_listener_arn` (Listener ARN from previous step)
+  - `security_group`: Use the ALB SG ID from previous step
+  - `existing_load_balancer_arn`: Use the ALB ARN from previous step
+  - `existing_listener_arn`: Use the Listener ARN from previous step
   - `private_subnets` (private subnets for ECS tasks)
   - `environment_variables` (DB host, DB password, etc. from RDS)
 **Result:**
@@ -45,7 +56,7 @@ To provision AWS resources and deploy Strapi using GitHub Actions, follow this r
 **Workflow:** `.github/workflows/ci.yml`
 **Inputs to provide:**
   - `ecr-registry` (ECR registry URL)
-  - `ecr-repository` (ECR repository name)
+  - `ecr-repository`: `toufikj-strapi`
   - `dockerfile-path` (path to Dockerfile)
   - `aws-region` (AWS region)
   - Any build args/secrets (DB host, DB password, etc.)
@@ -64,9 +75,10 @@ To provision AWS resources and deploy Strapi using GitHub Actions, follow this r
 ---
 
 ### Sequence Summary
-1. **Provision RDS first** (get DB endpoint, SG ID)
-2. **Provision ALB next** (get ALB ARN, Listener ARN, SG ID)
-3. **Provision ECS last** (use outputs from RDS and ALB)
+0. **Create ECR repository first** (`toufikj-strapi`)
+1. **Provision RDS** (get DB endpoint, SG ID)
+2. **Provision ALB** (use RDS SG ID as input)
+3. **Provision ECS** (use ALB SG, ALB ARN, Listener ARN as inputs)
 4. **Build and push Docker image to ECR** (use in ECS task definition)
 5. **Update ECS task/service** (deploy new image and envs)
 
