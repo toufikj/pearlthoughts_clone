@@ -8,6 +8,33 @@
 - One-click deployment and update via GitHub Actions
 - Example workflows for both application and infrastructure deployment
 
+
+## 📊 CloudWatch Monitoring for Strapi ECS Service
+
+This setup includes AWS CloudWatch monitoring for your Strapi ECS service, providing real-time visibility and operational insights. The following features are automatically provisioned:
+
+- **CloudWatch Dashboard:**
+  - Visualizes key ECS service metrics:
+    - **CPU Utilization (%)**
+    - **Memory Utilization (%)**
+    - **Task Count** (Running and Pending)
+    - **Network In/Out** (Bytes)
+  - Accessible in the AWS Console under CloudWatch > Dashboards (named `<stage>-<product>-ecs-dashboard`).
+
+- **CloudWatch Alarm:**
+  - Alerts (no action by default) if ECS CPU Utilization exceeds 70% (customizable in Terraform).
+  - Alarm is visible in CloudWatch > Alarms and can be extended to trigger notifications or auto-scaling.
+
+**How it works:**
+- Metrics are collected for the ECS service using the correct Cluster and Service names.
+- The dashboard and alarm are managed via Terraform in `iac/modules/aws/ecs/main.tf`.
+- No manual setup is required—resources are created as part of the ECS provisioning workflow.
+
+**Tip:**
+- You can customize thresholds, add more widgets, or connect alarms to SNS/email notifications by editing the Terraform module.
+
+---
+
 ## 🚀 Infrastructure Provisioning & Deployment Sequence (with GitHub Actions)
 
 To provision AWS resources and deploy Strapi using GitHub Actions, follow this recommended sequence:
