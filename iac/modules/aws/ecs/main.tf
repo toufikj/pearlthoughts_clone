@@ -69,6 +69,7 @@ resource "aws_cloudwatch_log_group" "ecs" {
 # Create ECS Task Definition for Strapi
 resource "aws_ecs_task_definition" "ecs" {
   family                   = "${var.stage}-${var.product}-task"
+  task_role_arn            = var.existing_ecs_task_role_arn
   execution_role_arn       = var.existing_ecs_task_execution_role_arn
   network_mode             = var.network_mode
   requires_compatibilities = ["FARGATE"]
