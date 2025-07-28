@@ -10,8 +10,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_cpu_utilization" {
   threshold           = 70
   alarm_description   = "ECS Service CPU Utilization > 70%"
   dimensions = {
-    ClusterName = var.cluster_id
-    ServiceName = "${var.stage}-${var.product}-service"
+    ClusterName = "toufikj-strapi"
   }
   treat_missing_data = "notBreaching"
   actions_enabled     = false
@@ -29,7 +28,7 @@ resource "aws_cloudwatch_dashboard" "ecs_service_metrics" {
         height = 6,
         properties = {
           metrics = [
-            [ "AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_id, "ServiceName", "${var.stage}-${var.product}-service" ],
+            [ "AWS/ECS", "CPUUtilization", "ClusterName", "toufikj-strapi", "ServiceName", "${var.stage}-${var.product}-service" ],
           ],
           view = "timeSeries",
           stacked = false,
@@ -45,7 +44,7 @@ resource "aws_cloudwatch_dashboard" "ecs_service_metrics" {
         height = 6,
         properties = {
           metrics = [
-            [ "AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_id, "ServiceName", "${var.stage}-${var.product}-service" ],
+            [ "AWS/ECS", "MemoryUtilization", "ClusterName", "toufikj-strapi", "ServiceName", "${var.stage}-${var.product}-service" ],
           ],
           view = "timeSeries",
           stacked = false,
