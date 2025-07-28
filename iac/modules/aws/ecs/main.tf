@@ -1,3 +1,61 @@
+# CloudWatch Alarm for ECS CPU Utilization (70% threshold, no action)
+resource "aws_cloudwatch_metric_alarm" "ecs_cpu_utilization" {
+  alarm_name          = "${var.stage}-${var.product}-ecs-cpu-utilization"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/ECS"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 70
+  alarm_description   = "ECS Service CPU Utilization > 70%"
+  dimensions = {
+    ClusterName = var.cluster_id
+    ServiceName = "${var.stage}-${var.product}-service"
+  }
+  treat_missing_data = "notBreaching"
+  actions_enabled     = false
+}
+# CloudWatch Dashboard for ECS Service Metrics
+resource "aws_cloudwatch_dashboard" "ecs_service_metrics" {
+  dashboard_name = "${var.stage}-${var.product}-ecs-dashboard"
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type = "metric",
+        x = 0,
+        y = 0,
+        width = 12,
+        height = 6,
+        properties = {
+          metrics = [
+            [ "AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_id, "ServiceName", "${var.stage}-${var.product}-service" ],
+          ],
+          view = "timeSeries",
+          stacked = false,
+          region = var.region,
+          title = "ECS Service CPU Utilization (%)"
+        }
+      },
+      {
+        type = "metric",
+        x = 0,
+        y = 7,
+        width = 12,
+        height = 6,
+        properties = {
+          metrics = [
+            [ "AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_id, "ServiceName", "${var.stage}-${var.product}-service" ],
+          ],
+          view = "timeSeries",
+          stacked = false,
+          region = var.region,
+          title = "ECS Service Memory Utilization (%)"
+        }
+      }
+    ]
+  })
+}
 resource "aws_ecs_cluster" "ecs" {
   name = "toufikj-strapi"
 }
@@ -105,6 +163,10 @@ resource "aws_ecs_service" "ecs" {
   task_definition = aws_ecs_task_definition.ecs.arn
   launch_type     = "FARGATE"
   desired_count   = var.desired_count
+
+  enable_execute_command   = true
+  enable_ecs_managed_tags  = true
+  propagate_tags           = "SERVICE"
 
   network_configuration {
     subnets         = var.private_subnets
