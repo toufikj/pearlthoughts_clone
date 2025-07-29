@@ -51,40 +51,6 @@ resource "aws_cloudwatch_dashboard" "ecs_service_metrics" {
           region = var.region,
           title = "ECS Service Memory Utilization (%)"
         }
-      },
-      {
-        type = "metric",
-        x = 0,
-        y = 14,
-        width = 12,
-        height = 6,
-        properties = {
-          metrics = [
-            [ "AWS/ECS", "RunningTaskCount", "ClusterName", "toufikj-strapi", "ServiceName", "${var.stage}-${var.product}-service" ],
-            [ ".", "PendingTaskCount", ".", ".", ".", "." ]
-          ],
-          view = "timeSeries",
-          stacked = false,
-          region = var.region,
-          title = "ECS Service Task Count (Running/Pending)"
-        }
-      },
-      {
-        type = "metric",
-        x = 0,
-        y = 21,
-        width = 12,
-        height = 6,
-        properties = {
-          metrics = [
-            [ "AWS/ECS", "NetworkRxBytes", "ClusterName", "toufikj-strapi", "ServiceName", "${var.stage}-${var.product}-service" ],
-            [ ".", "NetworkTxBytes", ".", ".", ".", "." ]
-          ],
-          view = "timeSeries",
-          stacked = false,
-          region = var.region,
-          title = "ECS Service Network In/Out (Bytes)"
-        }
       }
     ]
   })
