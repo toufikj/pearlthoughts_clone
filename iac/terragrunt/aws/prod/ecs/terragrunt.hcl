@@ -45,6 +45,7 @@ inputs = {
   vpc_id                = "vpc-06ba36bca6b59f95e"
   cluster_id            = "arn:aws:ecs:us-east-2:607700977843:cluster/toufikj-strapi"
   product               = "strapi"
+  capacity_provider     = "FARGATE_SPOT" 
   network_mode          = "awsvpc"
   container_name        = "strapi"
   
