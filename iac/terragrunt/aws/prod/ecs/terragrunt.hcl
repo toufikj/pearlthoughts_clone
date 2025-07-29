@@ -71,7 +71,7 @@ inputs = {
   private_subnets       = ["subnet-0f768008c6324831f", "subnet-0c0bb5df2571165a9", "subnet-0906c244cfe901a9a", "subnet-0cc2ddb32492bcc41", "subnet-0cc813dd4d76bf797"]
   security_group        = "sg-0d92c32b381a5c3f7"
   existing_listener_arn = "arn:aws:elasticloadbalancing:us-east-2:607700977843:listener/app/prod-strapi-alb/f668f29fcb317d68/2a5c3ceaa3636ac6"
-  existing_ecs_task_execution_role_arn = "arn:aws:iam::607700977843:role/ecs-task-execution-role"
+  existing_ecs_task_execution_role_arn = "arn:aws:iam::607700977843:role/ecsTaskExecutionRole-tohid-task8"
   # ssl_certificate_arn = ""
   listener_priority     = 5  # Listener priority
 } 
