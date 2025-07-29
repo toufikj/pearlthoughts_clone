@@ -57,6 +57,11 @@ resource "aws_cloudwatch_dashboard" "ecs_service_metrics" {
 }
 resource "aws_ecs_cluster" "ecs" {
   name = "toufikj-strapi"
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 # Create CloudWatch Log Group for Strapi
