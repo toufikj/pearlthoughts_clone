@@ -22,7 +22,7 @@ generate "provider_global" {
   if_exists = "overwrite"
   contents  = <<EOF
 terraform {
-  # backend "s3" {} # Removed remote state backend
+  backend "s3" {} # Removed remote state backend
   required_version = "${include.root.locals.version_terraform}"
   required_providers {
     aws = {
@@ -45,7 +45,7 @@ inputs = {
   vpc_id                = "vpc-06ba36bca6b59f95e"
   cluster_id            = "arn:aws:ecs:us-east-2:607700977843:cluster/toufikj-strapi"
   product               = "strapi"
-  capacity_provider     = "FARGATE_SPOT" 
+  # capacity_provider     = "FARGATE_SPOT" 
   network_mode          = "awsvpc"
   container_name        = "strapi"
   
@@ -67,13 +67,26 @@ inputs = {
     SERVICE = "strapi"
   }
   desired_count         = 1
-  existing_load_balancer_arn = "arn:aws:elasticloadbalancing:us-east-2:607700977843:loadbalancer/app/prod-strapi-alb/f668f29fcb317d68"
+  existing_load_balancer_arn = dependency.alb.outputs.alb_arn
   private_subnets       = ["subnet-0f768008c6324831f", "subnet-0c0bb5df2571165a9", "subnet-0906c244cfe901a9a", "subnet-0cc2ddb32492bcc41", "subnet-0cc813dd4d76bf797"]
-  security_group        = "sg-0d92c32b381a5c3f7"
-  existing_listener_arn = "arn:aws:elasticloadbalancing:us-east-2:607700977843:listener/app/prod-strapi-alb/f668f29fcb317d68/2a5c3ceaa3636ac6"
+  security_group        = [dependency.rds.outputs.strapi-sg]
+  existing_listener_arn = dependency.alb.outputs.alb_http_listener
   existing_ecs_task_execution_role_arn = "arn:aws:iam::607700977843:role/ecsTaskExecutionRole-tohid-task8"
   # ssl_certificate_arn = ""
   listener_priority     = 5  # Listener priority
+} 
+dependency "rds" {
+  config_path = "../rds"
+  mock_outputs = {
+    strapi-sg = ["sg-0ca4032c3be035ec5"]
+  }
+} 
+dependency "alb" {
+  config_path = "../alb"
+  mock_outputs = {
+    alb_arn = "arn:aws:elasticloadbalancing:us-east-2:607700977843:loadbalancer/app/prod-strapi-alb/bcae411fce459340"
+    alb_http_listener = "arn:aws:elasticloadbalancing:us-east-2:607700977843:listener/app/prod-strapi-alb/bcae411fce459340/2e4dceae69e6f284"
+  }
 } 
 
 terraform {
