@@ -22,7 +22,7 @@ generate "provider_global" {
   if_exists = "overwrite"
   contents  = <<EOF
 terraform {
-  # backend "s3" {} # Removed remote state backend
+  backend "s3" {} # Removed remote state backend
   required_version = "${include.root.locals.version_terraform}"
   required_providers {
     aws = {

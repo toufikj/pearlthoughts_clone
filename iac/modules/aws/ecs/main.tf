@@ -166,21 +166,21 @@ resource "aws_ecs_service" "ecs" {
   name            = "${var.stage}-${var.product}-service"
   cluster         = var.cluster_id
   task_definition = aws_ecs_task_definition.ecs.arn
-  # launch_type     = "FARGATE"
+  launch_type     = "FARGATE"
   desired_count   = var.desired_count
 
   enable_execute_command   = true
   enable_ecs_managed_tags  = true
   propagate_tags           = "SERVICE"
 
-  capacity_provider_strategy {
-    capacity_provider = var.capacity_provider
-    weight            = 1
-  }
+  # capacity_provider_strategy {
+  #   capacity_provider = var.capacity_provider
+  #   weight            = 1
+  # }
 
   network_configuration {
     subnets         = var.private_subnets
-    security_groups = [var.security_group]
+    security_groups = var.security_group
     assign_public_ip = true
   }
 

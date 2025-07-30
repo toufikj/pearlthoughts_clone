@@ -27,10 +27,10 @@ variable "cluster_id" {
   description = "The ARN or name of the ECS cluster where the service will run."
   type        = string
 }
-variable "capacity_provider" {
-  description = "The ECS capacity provider to use for the service."
-  type        = string
-}
+# variable "capacity_provider" {
+#   description = "The ECS capacity provider to use for the service."
+#   type        = string
+# }
 
 # CPU allocation for the ECS Task
 variable "cpu" {
@@ -130,7 +130,7 @@ variable "private_subnets" {
 # Security group for the ECS service
 variable "security_group" {
   description = "The security group associated with the ECS service."
-  type        = string
+  type        = list(string)
 }
 
 # Listener priority

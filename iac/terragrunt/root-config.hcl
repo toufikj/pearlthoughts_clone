@@ -11,12 +11,12 @@ locals {
 }
 
 
-# remote_state {
-#   backend = "s3"
-#   config = {
-#     bucket         = "terragrunt-2025"
-#     key            = "${path_relative_to_include()}/terraform.tfstate"
-#     encrypt        = true
-#     region         = local.region
-#   }
-# }
+remote_state {
+  backend = "s3"
+  config = {
+    bucket         = "toufikj-state"
+    key            = "${path_relative_to_include()}/terraform.tfstate"
+    encrypt        = true
+    region         = local.region
+  }
+}
