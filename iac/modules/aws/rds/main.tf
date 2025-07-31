@@ -14,6 +14,7 @@ resource "aws_db_instance" "db" {
   tags                    = var.tags
   deletion_protection     = var.deletion_protection
   db_subnet_group_name    = aws_db_subnet_group.db_subnet_group.name
+  skip_final_snapshot = true
 }
 
 resource "aws_db_subnet_group" "db_subnet_group" {

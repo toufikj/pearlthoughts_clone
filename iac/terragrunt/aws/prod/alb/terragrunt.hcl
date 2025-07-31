@@ -44,7 +44,7 @@ inputs = {
   product              = "strapi"
   
   subnets              = ["subnet-0f768008c6324831f", "subnet-0c0bb5df2571165a9","subnet-0cc2ddb32492bcc41"]
-  alb_sg               = [dependency.rds.outputs.strapi-sg]
+  alb_sg               = dependency.rds.outputs.strapi-sg
   
   # ssl_certificate_arn = ""
   
@@ -52,7 +52,7 @@ inputs = {
 dependency "rds" {
   config_path = "../rds"
   mock_outputs = {
-    strapi-sg = ["sg-0ca4032c3be035ec5"]  
+    strapi-sg = "sg-0ca4032c3be035ec5" 
   }
 } 
 
