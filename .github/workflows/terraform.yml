@@ -27,6 +27,7 @@ on:
         options:
           - plan
           - apply
+          - destroy
 
 env:
   TERRAFORM_VERSION: 1.8.5
@@ -84,4 +85,13 @@ jobs:
           tg_version: ${{ env.TERRAGRUNT_VERSION }}
           tg_dir: ${{ env.tg_dir }}
           tg_command: 'apply'
+
+      - name: Destroy
+        if: inputs.tf_function == 'destroy'
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: ${{ env.TERRAFORM_VERSION }}
+          tg_version: ${{ env.TERRAGRUNT_VERSION }}
+          tg_dir: ${{ env.tg_dir }}
+          tg_command: 'destroy'    
   
