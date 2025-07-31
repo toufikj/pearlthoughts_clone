@@ -21,6 +21,7 @@ on:
           - alb
           - rds
           - ecs
+          - ecs-code-deploy
       tf_function:
         type: choice
         description: "infrastructure planning / deployment"
