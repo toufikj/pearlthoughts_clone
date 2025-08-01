@@ -8,6 +8,10 @@ on:
         description: "Select the brand name"
         options:
           - AWS
+      task_dir: 
+        type: string
+        description: "Enter the task directory"  
+        default: "iac" 
       environment_name:
         type: choice
         description: "Select the environment name"
@@ -67,7 +71,7 @@ jobs:
       - name: Set tg path
         id: set-folder
         run: |
-          echo "tg_dir=iac/terragrunt/${{ env.resource_env }}/${{ inputs.environment_name }}/${{ inputs.resource }}" >> $GITHUB_ENV
+          echo "tg_dir=${{ env.task_dir }}/terragrunt/${{ env.resource_env }}/${{ inputs.environment_name }}/${{ inputs.resource }}" >> $GITHUB_ENV
 
       - name: Terraform Plan
         uses: gruntwork-io/terragrunt-action@v2
