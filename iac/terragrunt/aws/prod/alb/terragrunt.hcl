@@ -52,7 +52,7 @@ inputs = {
 dependency "rds" {
   config_path = "../rds"
   mock_outputs = {
-    strapi-sg = ["sg-0ca4032c3be035ec5"]  
+    strapi-sg = "sg-0ca4032c3be035ec5" 
   }
 } 
 
