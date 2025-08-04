@@ -83,14 +83,19 @@ jobs:
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:${{ github.sha }}
 
-      - name: Register new task definition
+      - name: Register new ECS task definition
         id: register-task
         run: |
-          TASK_DEF_ARN=$(aws ecs register-task-definition \
-            --cli-input-json '${{ steps.task-def.outputs.task-definition }}' \
-            --query "taskDefinition.taskDefinitionArn" \
-            --output text)
-          echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV    
+            echo "Registering new task definition from file..."
+
+            TASK_DEF_PATH="${{ steps.task-def.outputs.task-definition }}"
+
+            TASK_DEF_ARN=$(aws ecs register-task-definition \
+              --cli-input-json file://$TASK_DEF_PATH \
+              --query 'taskDefinition.taskDefinitionArn' \
+              --output text)
+
+            echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
 
       - name: Trigger CodeDeploy Deployment
         run: |
