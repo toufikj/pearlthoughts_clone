@@ -108,19 +108,21 @@ jobs:
 EOF
 )
 
-          # Escape JSON for CodeDeploy API
           ESCAPED_APPSPEC=$(echo "$APPSPEC" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
 
-          aws deploy create-deployment \
-            --application-name $CODEDEPLOY_APP_NAME \
-            --deployment-group-name $CODEDEPLOY_GROUP_NAME \
-            --deployment-config-name CodeDeployDefault.ECSCanary10Percent5Minutes \
-            --revision file://<(cat <<EOF
+          echo "Creating CodeDeploy deployment..."
+
+          cat > revision.json <<JSON
 {
   "revisionType": "AppSpecContent",
   "appSpecContent": {
     "content": "$ESCAPED_APPSPEC"
   }
 }
-EOF
-)
+JSON
+
+          aws deploy create-deployment \
+            --application-name ${{ env.CODEDEPLOY_APP_NAME }} \
+            --deployment-group-name ${{ env.CODEDEPLOY_GROUP_NAME }} \
+            --deployment-config-name CodeDeployDefault.ECSCanary10Percent5Minutes \
+            --revision file://revision.json
