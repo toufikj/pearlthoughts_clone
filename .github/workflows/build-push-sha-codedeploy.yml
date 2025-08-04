@@ -83,11 +83,18 @@ jobs:
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:${{ github.sha }}
 
+      - name: Register new task definition
+        id: register-task
+        run: |
+          TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json '${{ steps.task-def.outputs.task-definition }}' \
+            --query "taskDefinition.taskDefinitionArn" \
+            --output text)
+          echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV    
+
       - name: Trigger CodeDeploy Deployment
         run: |
-          echo "Generating AppSpec..."
-
-          TASK_DEF_JSON=$(cat '${{ steps.task-def.outputs.task-definition }}')
+          echo "Creating AppSpec with Task ARN..."
 
           echo "{
             \"version\": 1,
@@ -96,7 +103,7 @@ jobs:
                 \"TargetService\": {
                   \"Type\": \"AWS::ECS::Service\",
                   \"Properties\": {
-                    \"TaskDefinition\": $TASK_DEF_JSON,
+                    \"TaskDefinition\": \"${TASK_DEF_ARN}\",
                     \"LoadBalancerInfo\": {
                       \"ContainerName\": \"${{ env.CONTAINER_NAME }}\",
                       \"ContainerPort\": 1337
@@ -114,7 +121,6 @@ jobs:
             }
           }" > revision.json
 
-          echo "Deploying via CodeDeploy..."
           aws deploy create-deployment \
             --application-name ${{ env.CODEDEPLOY_APP_NAME }} \
             --deployment-group-name ${{ env.CODEDEPLOY_GROUP_NAME }} \
