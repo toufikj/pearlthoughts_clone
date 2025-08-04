@@ -83,50 +83,44 @@ jobs:
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:${{ github.sha }}
 
-      - name: Register new ECS Task Definition
-        id: register-task
+      - name: Trigger CodeDeploy Deployment
         run: |
-          TASK_DEF_ARN=$(aws ecs register-task-definition \
-            --cli-input-json file://${{ steps.render-task.outputs.task-definition }} \
-            --query 'taskDefinition.taskDefinitionArn' \
-            --output text)
-          echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
+            TASK_DEF_JSON='${{ steps.task-def.outputs.task-definition }}'
 
-      - name: Generate AppSpec content
-        id: render-appspec
-        run: |
-          cat <<EOF > appspec.json
-          {
-            "version": 1,
-            "Resources": [
-              {
-                "TargetService": {
-                  "Type": "AWS::ECS::Service",
-                  "Properties": {
-                    "TaskDefinition": "${{ env.TASK_DEF_ARN }}",
-                    "LoadBalancerInfo": {
-                      "ContainerName": "${{ env.CONTAINER_NAME }}",
-                      "ContainerPort": 1337
+            APPSPEC=$(cat <<EOF
+            {
+              "version": 1,
+              "Resources": [
+                {
+                  "TargetService": {
+                    "Type": "AWS::ECS::Service",
+                    "Properties": {
+                      "TaskDefinition": $TASK_DEF_JSON,
+                      "LoadBalancerInfo": {
+                        "ContainerName": "${{ env.CONTAINER_NAME }}",
+                        "ContainerPort": 1337
+                      }
                     }
                   }
                 }
-              }
-            ]
-          }
-          EOF
-
-      - name: Trigger CodeDeploy Deployment
-        run: |
-          aws deploy create-deployment \
-            --application-name $CODEDEPLOY_APP_NAME \
-            --deployment-group-name $CODEDEPLOY_GROUP_NAME \
-            --deployment-config-name CodeDeployDefault.ECSCanary10Percent5Minutes \
-            --revision file://<(cat <<EOF
-            {
-                "revisionType": "AppSpecContent",
-                "appSpecContent": {
-                    "content": "$(cat appspec.json | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')"
-                }
+              ]
             }
             EOF
-            ) \
+            )
+
+                # Escape AppSpec JSON for inline CLI usage
+                ESCAPED_APPSPEC=$(echo "$APPSPEC" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+
+                aws deploy create-deployment \
+                  --application-name ${{ env.CODEDEPLOY_APP_NAME }} \
+                  --deployment-group-name ${{ env.CODEDEPLOY_GROUP_NAME }} \
+                  --deployment-config-name CodeDeployDefault.ECSCanary10Percent5Minutes \
+                  --revision file://<(cat <<JSON
+                  {
+                    "revisionType": "AppSpecContent",
+                    "appSpecContent": {
+                      "content": "$ESCAPED_APPSPEC"
+                    }
+                  }
+                  JSON
+                  ) 
