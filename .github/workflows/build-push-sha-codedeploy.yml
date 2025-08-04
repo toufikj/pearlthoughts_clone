@@ -87,7 +87,7 @@ jobs:
         run: |
           echo "Generating AppSpec..."
 
-          TASK_DEF_JSON='${{ steps.task-def.outputs.task-definition }}'
+          TASK_DEF_JSON=$(cat '${{ steps.task-def.outputs.task-definition }}')
 
           echo "{
             \"version\": 1,
