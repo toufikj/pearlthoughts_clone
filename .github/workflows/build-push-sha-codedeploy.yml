@@ -85,42 +85,36 @@ jobs:
 
       - name: Trigger CodeDeploy Deployment
         run: |
+          echo "Generating AppSpec..."
+
           TASK_DEF_JSON='${{ steps.task-def.outputs.task-definition }}'
 
-          APPSPEC=$(cat <<EOF
-{
-  "version": 1,
-  "Resources": [
-    {
-      "TargetService": {
-        "Type": "AWS::ECS::Service",
-        "Properties": {
-          "TaskDefinition": $TASK_DEF_JSON,
-          "LoadBalancerInfo": {
-            "ContainerName": "${{ env.CONTAINER_NAME }}",
-            "ContainerPort": 1337
-          }
-        }
-      }
-    }
-  ]
-}
-EOF
-)
+          echo "{
+            \"version\": 1,
+            \"Resources\": [
+              {
+                \"TargetService\": {
+                  \"Type\": \"AWS::ECS::Service\",
+                  \"Properties\": {
+                    \"TaskDefinition\": $TASK_DEF_JSON,
+                    \"LoadBalancerInfo\": {
+                      \"ContainerName\": \"${{ env.CONTAINER_NAME }}\",
+                      \"ContainerPort\": 1337
+                    }
+                  }
+                }
+              }
+            ]
+          }" > appspec.json
 
-          ESCAPED_APPSPEC=$(echo "$APPSPEC" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+          echo "{
+            \"revisionType\": \"AppSpecContent\",
+            \"appSpecContent\": {
+              \"content\": \"$(cat appspec.json | sed 's/\"/\\\\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')\"
+            }
+          }" > revision.json
 
-          echo "Creating CodeDeploy deployment..."
-
-          cat > revision.json <<JSON
-{
-  "revisionType": "AppSpecContent",
-  "appSpecContent": {
-    "content": "$ESCAPED_APPSPEC"
-  }
-}
-JSON
-
+          echo "Deploying via CodeDeploy..."
           aws deploy create-deployment \
             --application-name ${{ env.CODEDEPLOY_APP_NAME }} \
             --deployment-group-name ${{ env.CODEDEPLOY_GROUP_NAME }} \
