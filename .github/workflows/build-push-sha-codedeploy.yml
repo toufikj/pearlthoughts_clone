@@ -1,0 +1,132 @@
+name: Build>Push>Update-ECS>CodeDeploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      ecr-registry:
+        description: 'The Amazon ECR registry URL'
+        required: true
+        type: string
+        default: "607700977843.dkr.ecr.us-east-2.amazonaws.com/toufikj-strapi"
+      ecr-repository:
+        description: 'The Amazon ECR repository name'
+        required: true
+        type: string
+        default: toufikj-strapi
+      aws-region:
+        description: 'The AWS region'
+        required: true
+        type: string
+        default: us-east-2
+      dockerfile-path:
+        description: 'The path to the Dockerfile'
+        required: true
+        type: string
+        default: ./my-strapi-app/
+
+env:
+  ECS_TASK_DEFINITION: "prod-strapi-task"
+  ECS_CLUSTER_NAME: "toufikj-strapi"
+  ECS_SERVICE_NAME: "prod-strapi-service"
+  CONTAINER_NAME: "strapi"   
+  CODEDEPLOY_APP_NAME: "prod-strapi-codedeploy-app"
+  CODEDEPLOY_GROUP_NAME: "prod-strapi-dg"   
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: Log in to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@v5.1.0
+        with:
+          context: ${{ inputs.dockerfile-path }}
+          file: ${{ inputs.dockerfile-path }}/Dockerfile
+          push: true
+          build-args: |
+            DATABASE_HOST=${{ secrets.DB_HOST }}
+            DATABASE_PASSWORD=${{ secrets.DB_PASS }}
+          tags: |
+            ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:${{ github.sha }}
+            ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:latest
+
+      - name: Get the Current ECS Task Definition
+        id: get-task-def 
+        run: |
+          aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
+
+      - name: Render New ECS Task Definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.ecr-login.outputs.registry }}/${{ inputs.ecr-repository }}:${{ github.sha }}
+
+      - name: Register new ECS Task Definition
+        id: register-task
+        run: |
+          TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://${{ steps.render-task.outputs.task-definition }} \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
+
+      - name: Generate AppSpec content
+        id: render-appspec
+        run: |
+          cat <<EOF > appspec.json
+          {
+            "version": 1,
+            "Resources": [
+              {
+                "TargetService": {
+                  "Type": "AWS::ECS::Service",
+                  "Properties": {
+                    "TaskDefinition": "${{ env.TASK_DEF_ARN }}",
+                    "LoadBalancerInfo": {
+                      "ContainerName": "${{ env.CONTAINER_NAME }}",
+                      "ContainerPort": 1337
+                    }
+                  }
+                }
+              }
+            ]
+          }
+          EOF
+
+      - name: Trigger CodeDeploy Deployment
+        run: |
+          aws deploy create-deployment \
+            --application-name $CODEDEPLOY_APP_NAME \
+            --deployment-group-name $CODEDEPLOY_GROUP_NAME \
+            --deployment-config-name CodeDeployDefault.ECSCanary10Percent5Minutes \
+            --revision file://<(cat <<EOF
+            {
+                "revisionType": "AppSpecContent",
+                "appSpecContent": {
+                    "content": "$(cat appspec.json | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')"
+                }
+            }
+            EOF
+            ) \
