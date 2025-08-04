@@ -119,15 +119,19 @@ jobs:
             ]
           }" > appspec.json
 
-          echo "{
-            \"revisionType\": \"AppSpecContent\",
-            \"appSpecContent\": {
-              \"content\": \"$(cat appspec.json | sed 's/\"/\\\\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')\"
-            }
-          }" > revision.json
+          APPSPEC_CONTENT=$(cat appspec.json | jq -Rs .)
 
           aws deploy create-deployment \
             --application-name ${{ env.CODEDEPLOY_APP_NAME }} \
             --deployment-group-name ${{ env.CODEDEPLOY_GROUP_NAME }} \
             --deployment-config-name CodeDeployDefault.ECSCanary10Percent5Minutes \
-            --revision file://revision.json
+            --cli-input-json "{
+              \"applicationName\": \"${{ env.CODEDEPLOY_APP_NAME }}\",
+              \"deploymentGroupName\": \"${{ env.CODEDEPLOY_GROUP_NAME }}\",
+              \"revision\": {
+                \"revisionType\": \"AppSpecContent\",
+                \"appSpecContent\": {
+                  \"content\": $APPSPEC_CONTENT
+                }
+              }
+            }"
