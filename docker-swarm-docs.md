@@ -38,7 +38,7 @@
 - Unlike Kubernetes, Docker Swarm doesn’t have a native scheduler for cron-like jobs, but you can achieve this using external tools or containers with built-in schedulers.
 
 **References:**  
-- [Stack Overflow: Cronjob on Docker Swarm](https://stackoverflow.com/questions/36591654/cronjob-on-docker-swarm)
+- [Scheduling jobs with cron in Docker Swarm](https://crazymax.medium.com/create-jobs-on-a-time-based-schedule-on-swarm-94258f95c905) 
 - [Supercronic GitHub](https://github.com/aptible/supercronic)
 
 ---
